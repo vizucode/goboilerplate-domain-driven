@@ -2,20 +2,23 @@ package goods
 
 import (
 	"context"
-	"fmt"
 	"goboilerplate-domain-driven/internal/domain/goods/repository"
 )
 
 type GetAllGoods struct {
-	repoOrder repository.GoodsRepository
+	repo repository.GoodsRepository
 }
 
-func NewGetAllOrder() (resp *GetAllGoods) {
-	return &GetAllGoods{}
+func NewGetAllOrder(
+	repo repository.GoodsRepository,
+) (resp *GetAllGoods) {
+	return &GetAllGoods{
+		repo: repo,
+	}
 }
 
 func (uc *GetAllGoods) GetGoods(ctx context.Context, id int) (resp ResponseGoods, err error) {
-	resultGoods, err := uc.repoOrder.GetGoods(ctx, id)
+	resultGoods, err := uc.repo.GetGoods(ctx, id)
 	if err != nil {
 		return resp, err
 	}
@@ -25,6 +28,5 @@ func (uc *GetAllGoods) GetGoods(ctx context.Context, id int) (resp ResponseGoods
 		Name: resultGoods.Name,
 	}
 
-	fmt.Println(resp)
 	return resp, err
 }
