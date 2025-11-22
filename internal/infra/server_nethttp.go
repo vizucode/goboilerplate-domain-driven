@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -21,8 +22,8 @@ func (s *server) Use(mw Middleware) {
 	s.Middlewares = append(s.Middlewares, mw)
 }
 
-func (s *server) NetHttpListen(addr string) {
-	http.ListenAndServe(addr, s.mux)
+func (s *server) NetHttpListen(host string, port uint) {
+	http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), s.mux)
 }
 
 func chain(handler http.Handler, mws ...Middleware) http.Handler {

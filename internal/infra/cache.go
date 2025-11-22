@@ -7,7 +7,7 @@ import (
 
 type CacheCfg struct {
 	Host     string
-	Port     string
+	Port     uint
 	Password string
 	DB       int
 }
