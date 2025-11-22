@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type goodsHandler struct {
+type GoodsHandler struct {
 	createGoods *goods.CreateGoods
 	getAllGoods *goods.GetAllGoods
 }
@@ -16,14 +16,14 @@ type goodsHandler struct {
 func NewGoodsHandler(
 	createGoods *goods.CreateGoods,
 	getAllGoods *goods.GetAllGoods,
-) *goodsHandler {
-	return &goodsHandler{
+) *GoodsHandler {
+	return &GoodsHandler{
 		createGoods: createGoods,
 		getAllGoods: getAllGoods,
 	}
 }
 
-func (h *goodsHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req RequestGoods
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -54,13 +54,13 @@ func (h *goodsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *goodsHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
 
 	var (
 		responseData ResponseGoods
 	)
 
-	GoodIdStr := r.URL.Query().Get("id")
+	GoodIdStr := r.URL.Path
 	if strings.EqualFold(GoodIdStr, "") {
 		http.Error(w, "Query was not found", http.StatusBadRequest)
 		return
