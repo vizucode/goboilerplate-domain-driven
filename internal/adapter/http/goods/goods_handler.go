@@ -9,17 +9,14 @@ import (
 )
 
 type GoodsHandler struct {
-	createGoods *goods.CreateGoods
-	getAllGoods *goods.GetAllGoods
+	goods *goods.ServiceGoods
 }
 
 func NewGoodsHandler(
-	createGoods *goods.CreateGoods,
-	getAllGoods *goods.GetAllGoods,
+	serviceGoods *goods.ServiceGoods,
 ) *GoodsHandler {
 	return &GoodsHandler{
-		createGoods: createGoods,
-		getAllGoods: getAllGoods,
+		goods: serviceGoods,
 	}
 }
 
@@ -32,13 +29,12 @@ func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	goodUsecase := goods.RequestGoods{
-		Id:   req.Id,
 		Name: req.Name,
 	}
 
 	ctx := r.Context()
 
-	err := h.createGoods.CreateGoods(ctx, goodUsecase)
+	err := h.goods.CreateGoods(ctx, goodUsecase)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -60,13 +56,13 @@ func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
 		responseData ResponseGoods
 	)
 
-	GoodIdStr := r.URL.Path
-	if strings.EqualFold(GoodIdStr, "") {
-		http.Error(w, "Query was not found", http.StatusBadRequest)
+	path := strings.TrimPrefix(r.URL.Path, "/goods/")
+	if path == "" {
+		http.Error(w, "ID not found", http.StatusBadRequest)
 		return
 	}
 
-	GoodId, err := strconv.Atoi(GoodIdStr)
+	GoodId, err := strconv.Atoi(path)
 	if err != nil {
 		http.Error(w, "invalid ID format", http.StatusBadRequest)
 		return
@@ -74,9 +70,9 @@ func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	resultGood, err := h.getAllGoods.GetGoods(ctx, GoodId)
+	resultGood, err := h.goods.GetGoods(ctx, GoodId)
 	if err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

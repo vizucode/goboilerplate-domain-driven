@@ -1,7 +1,6 @@
 package httpgoods
 
 type RequestGoods struct {
-	Id   uint   `json:"id" validate:"required"`
 	Name string `json:"name" validate:"required"`
 }
 

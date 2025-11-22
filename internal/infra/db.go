@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 type DBConfig struct {
@@ -36,5 +38,5 @@ func NewPostgresDB(cfg DBConfig) (resp *sql.DB, err error) {
 	db.SetConnMaxLifetime(cfg.MaxPoolLifetime)
 	db.SetConnMaxIdleTime(cfg.MaxIdleTime)
 
-	return resp, nil
+	return db, nil
 }
