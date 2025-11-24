@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	appHost, err := strconv.Atoi(os.Getenv("APP_PORT"))
+	appPort, err := strconv.Atoi(os.Getenv("APP_PORT"))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -41,7 +41,7 @@ func main() {
 
 	httpGoods := httpgoods.NewGoodsHandler(ucGoods)
 
-	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appHost))
+	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appPort))
 	httpServer.RouteNetHttp(httpGoods)
 	httpServer.NetHttpListen()
 
