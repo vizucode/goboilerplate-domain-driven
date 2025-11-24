@@ -23,7 +23,8 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	psqlDB, err := infra.NewPostgresDB(infra.DBConfig{
+	psqlDB, err := infra.NewInitDB(infra.DBConfig{
+		Driver:   os.Getenv("DB_DRIVER"),
 		Host:     os.Getenv("DB_HOST"),
 		Port:     dbPort,
 		User:     os.Getenv("DB_USER"),
