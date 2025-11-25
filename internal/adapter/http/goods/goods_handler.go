@@ -7,25 +7,40 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type GoodsHandler struct {
-	goods *goods.ServiceGoods
+	goods   *goods.ServiceGoods
+	formVal *validator.Validate
 }
 
 func NewGoodsHandler(
 	serviceGoods *goods.ServiceGoods,
+	formVal *validator.Validate,
 ) *GoodsHandler {
 	return &GoodsHandler{
-		goods: serviceGoods,
+		goods:   serviceGoods,
+		formVal: formVal,
 	}
 }
 
 func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var req RequestGoods
+	var (
+		req RequestGoods
+		err error
+	)
+	ctx := r.Context()
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.WriteError(w, utils.HandleError(err.Error(), http.StatusBadRequest))
+		return
+	}
+
+	err = h.formVal.StructCtx(ctx, &req)
+	if err != nil {
+		utils.WriteError(w, err)
 		return
 	}
 
@@ -33,9 +48,7 @@ func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Name: req.Name,
 	}
 
-	ctx := r.Context()
-
-	err := h.goods.CreateGoods(ctx, goodUsecase)
+	err = h.goods.CreateGoods(ctx, goodUsecase)
 	if err != nil {
 		utils.WriteError(w, err)
 		return

@@ -1,6 +1,8 @@
 package goods
 
-import "goboilerplate-domain-driven/internal/domain/goods/repository"
+import (
+	"goboilerplate-domain-driven/internal/domain/goods/repository"
+)
 
 type ServiceGoods struct {
 	repo repository.GoodsRepository

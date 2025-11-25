@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -40,9 +41,11 @@ func App() {
 		log.Fatal(err.Error())
 	}
 
+	validate := validator.New()
+
 	goodsRepo := goodsRepo.NewGoodsRepository(psqlDB)
 	ucGoods := serviceGoods.NewServiceGoods(goodsRepo)
-	httpGoods := httpgoods.NewGoodsHandler(ucGoods)
+	httpGoods := httpgoods.NewGoodsHandler(ucGoods, validate)
 
 	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appPort))
 	httpServer.RouteNetHttp(httpGoods)
