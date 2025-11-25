@@ -8,7 +8,7 @@ import (
 func (uc *goodsRepository) GetGoods(ctx context.Context, id int) (resp *entity.Goods, err error) {
 	resp = &entity.Goods{}
 
-	row := uc.db.QueryRowContext(ctx, "SELECT * FROM goods WHERE id = $1", id)
+	row := uc.db.QueryRowContext(ctx, "SELECT g.id,g.name FROM goods g WHERE id = $1", id)
 	if row.Err() != nil {
 		return resp, err
 	}
