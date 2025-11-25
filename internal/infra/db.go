@@ -3,7 +3,7 @@ package infra
 import (
 	"database/sql"
 	"fmt"
-	"goboilerplate-domain-driven/pkg"
+	"goboilerplate-domain-driven/pkg/utils"
 	"time"
 
 	"github.com/pressly/goose/v3"
@@ -27,7 +27,7 @@ type DBConfig struct {
 
 func NewInitDB(cfg DBConfig) (resp *sql.DB, err error) {
 
-	db, err := sql.Open(cfg.Driver, pkg.GetPostgresDsn(cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Name, cfg.SSLMode))
+	db, err := sql.Open(cfg.Driver, utils.GetPostgresDsn(cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Name, cfg.SSLMode))
 	if err != nil {
 		return nil, fmt.Errorf("failed open db: %w", err)
 	}
@@ -37,7 +37,7 @@ func NewInitDB(cfg DBConfig) (resp *sql.DB, err error) {
 	db.SetConnMaxLifetime(cfg.MaxPoolLifetime)
 	db.SetConnMaxIdleTime(cfg.MaxIdleTime)
 
-	if err := goose.Up(db, pkg.GetMigrationDir()); err != nil {
+	if err := goose.Up(db, utils.GetMigrationDir()); err != nil {
 		return nil, fmt.Errorf("failed open migration: %w", err)
 	}
 

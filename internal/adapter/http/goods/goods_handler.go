@@ -3,6 +3,7 @@ package httpgoods
 import (
 	"encoding/json"
 	"goboilerplate-domain-driven/internal/usecase/goods"
+	"goboilerplate-domain-driven/pkg/utils"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,7 +25,7 @@ func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var req RequestGoods
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		utils.WriteError(w, utils.HandleError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -36,18 +37,11 @@ func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := h.goods.CreateGoods(ctx, goodUsecase)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.WriteError(w, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-
-	json.NewEncoder(w).Encode(map[string]any{
-		"status":  "OK",
-		"message": "Created",
-		"data":    nil,
-	})
+	utils.WriteOK(w, "Success create data goods", http.StatusCreated, nil)
 }
 
 func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
@@ -58,13 +52,13 @@ func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.TrimPrefix(r.URL.Path, "/goods/")
 	if path == "" {
-		http.Error(w, "ID not found", http.StatusBadRequest)
+		utils.WriteError(w, utils.HandleError("ID not found", http.StatusBadRequest))
 		return
 	}
 
 	GoodId, err := strconv.Atoi(path)
 	if err != nil {
-		http.Error(w, "invalid ID format", http.StatusBadRequest)
+		utils.WriteError(w, utils.HandleError(err.Error(), http.StatusBadRequest))
 		return
 	}
 
@@ -72,7 +66,7 @@ func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
 
 	resultGood, err := h.goods.GetGoods(ctx, GoodId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.WriteError(w, err)
 		return
 	}
 
@@ -81,12 +75,5 @@ func (h *GoodsHandler) GetGood(w http.ResponseWriter, r *http.Request) {
 		Name: resultGood.Name,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	json.NewEncoder(w).Encode(map[string]any{
-		"status":  "OK",
-		"message": "Successfully get data",
-		"data":    responseData,
-	})
+	utils.WriteOK(w, "Successfully get data", http.StatusOK, responseData)
 }

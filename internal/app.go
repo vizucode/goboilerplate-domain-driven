@@ -41,9 +41,7 @@ func App() {
 	}
 
 	goodsRepo := goodsRepo.NewGoodsRepository(psqlDB)
-
 	ucGoods := serviceGoods.NewServiceGoods(goodsRepo)
-
 	httpGoods := httpgoods.NewGoodsHandler(ucGoods)
 
 	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appPort))
