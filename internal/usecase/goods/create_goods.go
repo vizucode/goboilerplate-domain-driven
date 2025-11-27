@@ -3,9 +3,15 @@ package goods
 import (
 	"context"
 	"goboilerplate-domain-driven/internal/domain/goods/entity.go"
+
+	"go.opentelemetry.io/otel"
 )
 
 func (uc *ServiceGoods) CreateGoods(ctx context.Context, req RequestGoods) (err error) {
+	tracer := otel.Tracer("usecase")
+	ctx, span := tracer.Start(ctx, "Usecase:CreateGoods")
+	defer span.End()
+
 	p := entity.Goods{
 		Name: req.Name,
 	}

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"go.opentelemetry.io/otel"
 )
 
 type GoodsHandler struct {
@@ -27,11 +28,14 @@ func NewGoodsHandler(
 }
 
 func (h *GoodsHandler) Create(w http.ResponseWriter, r *http.Request) {
+	tracer := otel.Tracer("handler")
+	ctx, span := tracer.Start(r.Context(), "Handler:CreateGoods")
+	defer span.End()
+
 	var (
 		req RequestGoods
 		err error
 	)
-	ctx := r.Context()
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.WriteError(w, utils.HandleError(err.Error(), http.StatusBadRequest))

@@ -2,6 +2,7 @@ package observability
 
 import (
 	"context"
+	"fmt"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -21,15 +22,19 @@ func InitTracer(ctx context.Context, cfg Config) (*sdktrace.TracerProvider, erro
 	var exp sdktrace.SpanExporter
 	var err error
 
+	fmt.Println(cfg.Endpoint)
+
 	if cfg.OtelMode == "otlp" && cfg.Endpoint != "" {
 		exp, err = otlptracegrpc.New(ctx,
 			otlptracegrpc.WithInsecure(),
 			otlptracegrpc.WithEndpoint(cfg.Endpoint),
 		)
-	} else {
+	} else if cfg.OtelMode == "stdout" {
 		exp, err = stdouttrace.New(
 			stdouttrace.WithPrettyPrint(),
 		)
+	} else {
+		return nil, nil
 	}
 
 	if err != nil {

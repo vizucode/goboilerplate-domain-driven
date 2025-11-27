@@ -1,10 +1,12 @@
 package internal
 
 import (
+	"context"
 	"embed"
 	httpgoods "goboilerplate-domain-driven/internal/adapter/http/goods"
 	goodsRepo "goboilerplate-domain-driven/internal/adapter/repository/goods"
 	"goboilerplate-domain-driven/internal/infra"
+	"goboilerplate-domain-driven/internal/infra/observability"
 	serviceGoods "goboilerplate-domain-driven/internal/usecase/goods"
 	"log"
 	"os"
@@ -18,6 +20,19 @@ import (
 var embedMigrations embed.FS
 
 func App() {
+
+	ctx := context.Background()
+
+	tracer, err := observability.InitTracer(ctx, observability.Config{
+		ServiceName: "goboilerplate-domain-driven",
+		OtelMode:    os.Getenv("OTEL_TRACER_MODE"),
+		Endpoint:    os.Getenv("OTEL_TRACER_OTLP_ENDPOINT"),
+	})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer tracer.Shutdown(ctx)
+
 	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
 		log.Fatal(err.Error())
