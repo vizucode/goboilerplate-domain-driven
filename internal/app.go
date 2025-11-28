@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	httpgoods "goboilerplate-domain-driven/internal/adapter/http/goods"
+	"goboilerplate-domain-driven/internal/adapter/middleware"
 	goodsRepo "goboilerplate-domain-driven/internal/adapter/repository/goods"
 	"goboilerplate-domain-driven/internal/infra"
 	"goboilerplate-domain-driven/internal/infra/observability"
@@ -63,6 +64,7 @@ func App() {
 	httpGoods := httpgoods.NewGoodsHandler(ucGoods, validate)
 
 	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appPort))
+	httpServer.Use(middleware.LoggingMiddleware)
 	httpServer.RouteNetHttp(httpGoods)
 	httpServer.NetHttpListen()
 }

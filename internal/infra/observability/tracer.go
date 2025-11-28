@@ -2,7 +2,6 @@ package observability
 
 import (
 	"context"
-	"fmt"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -21,8 +20,6 @@ type Config struct {
 func InitTracer(ctx context.Context, cfg Config) (*sdktrace.TracerProvider, error) {
 	var exp sdktrace.SpanExporter
 	var err error
-
-	fmt.Println(cfg.Endpoint)
 
 	if cfg.OtelMode == "otlp" && cfg.Endpoint != "" {
 		exp, err = otlptracegrpc.New(ctx,
