@@ -34,6 +34,12 @@ func App() {
 	}
 	defer tracer.Shutdown(ctx)
 
+	observability.InitMetrics(ctx, observability.Config{
+		ServiceName: "goboilerplate-domain-driven",
+		OtelMode:    os.Getenv("OTEL_MATRIC_MODE"),
+		Endpoint:    os.Getenv("OTEL_MATRIC_OTLP_ENDPOINT"),
+	})
+
 	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
 	if err != nil {
 		log.Fatal(err.Error())
@@ -65,6 +71,7 @@ func App() {
 
 	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appPort))
 	httpServer.Use(middleware.LoggingMiddleware)
+	httpServer.Use(middleware.MetricsMiddleware)
 	httpServer.RouteNetHttp(httpGoods)
 	httpServer.NetHttpListen()
 }

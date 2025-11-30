@@ -11,12 +11,6 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 )
 
-type Config struct {
-	ServiceName string
-	OtelMode    string // stdout or otlp
-	Endpoint    string // otel-collector:4317
-}
-
 func InitTracer(ctx context.Context, cfg Config) (*sdktrace.TracerProvider, error) {
 	var exp sdktrace.SpanExporter
 	var err error
