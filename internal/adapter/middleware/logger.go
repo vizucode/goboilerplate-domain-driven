@@ -15,12 +15,18 @@ import (
 
 type responseRecorder struct {
 	http.ResponseWriter
-	Body *bytes.Buffer
+	Body       *bytes.Buffer
+	StatusCode uint
 }
 
 func (r responseRecorder) Write(b []byte) (int, error) {
 	r.Body.Write(b)
 	return r.ResponseWriter.Write(b)
+}
+
+func (r *responseRecorder) WriteHeader(code int) {
+	r.StatusCode = uint(code)
+	r.ResponseWriter.WriteHeader(code)
 }
 
 func LoggingMiddleware(next http.Handler) http.Handler {
@@ -36,13 +42,15 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		rec := &responseRecorder{
 			ResponseWriter: w,
 			Body:           bytes.NewBuffer([]byte{}),
+			StatusCode:     200,
 		}
 
 		// 2. Prepare log container
 		lc := &observability.LogContainer{
-			RequestID:  uuid.New().String(),
-			HttpMethod: r.Method,
-			Headers:    map[string]string{},
+			RequestID:    uuid.New().String(),
+			HttpMethod:   r.Method,
+			Headers:      map[string]string{},
+			ThirdParties: []observability.ThirdPartyLog{},
 		}
 
 		// Extract headers
@@ -65,15 +73,18 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 		// 4. After handler completed
 		lc.Response = rec.Body.String()
+		lc.StatusCode = rec.StatusCode
 
 		// 5. Log as JSON via zerolog
 		log.Info().
 			Str("request_id", lc.RequestID).
+			Uint("status_code", lc.StatusCode).
 			Str("trace_id", span.SpanContext().TraceID().String()).
 			Str("span_id", span.SpanContext().SpanID().String()).
 			Str("user_identifier", lc.UserIdentifier).
 			Str("http_method", lc.HttpMethod).
 			Interface("headers", lc.Headers).
+			Interface("third_parties", lc.ThirdParties).
 			Str("body_request", lc.BodyRequest).
 			Interface("logs", lc.Logs).
 			Str("response", lc.Response).

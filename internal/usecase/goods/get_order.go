@@ -10,6 +10,8 @@ func (uc *ServiceGoods) GetGoods(ctx context.Context, id int) (resp ResponseGood
 		return resp, err
 	}
 
+	uc.jsonPlace.FetchExternal(ctx)
+
 	resp = ResponseGoods{
 		Id:   uint(resultGoods.ID),
 		Name: resultGoods.Name,

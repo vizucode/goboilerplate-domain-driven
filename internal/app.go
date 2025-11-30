@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"embed"
+	"goboilerplate-domain-driven/internal/adapter/external/jsonplaceholder"
 	httpgoods "goboilerplate-domain-driven/internal/adapter/http/goods"
 	"goboilerplate-domain-driven/internal/adapter/middleware"
 	goodsRepo "goboilerplate-domain-driven/internal/adapter/repository/goods"
@@ -65,8 +66,10 @@ func App() {
 
 	validate := validator.New()
 
+	jsonPlace := jsonplaceholder.NewJsonPlaceHolder()
+
 	goodsRepo := goodsRepo.NewGoodsRepository(psqlDB)
-	ucGoods := serviceGoods.NewServiceGoods(goodsRepo)
+	ucGoods := serviceGoods.NewServiceGoods(goodsRepo, jsonPlace)
 	httpGoods := httpgoods.NewGoodsHandler(ucGoods, validate)
 
 	httpServer := infra.NewNetHttpServer(os.Getenv("APP_HOST"), uint(appPort))
