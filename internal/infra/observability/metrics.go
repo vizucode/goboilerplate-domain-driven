@@ -17,10 +17,12 @@ import (
 var (
 	Meter metric.Meter
 
-	// 4 jenis metrics
+	// 4 jenis metrics (plus additional golden metrics)
 	HttpRequestCounter metric.Int64Counter
 	ActiveUsers        metric.Int64UpDownCounter
 	HttpLatency        metric.Float64Histogram
+	HttpRequestSize    metric.Int64Histogram
+	HttpResponseSize   metric.Int64Histogram
 
 	HttpStatus2xx metric.Int64Counter
 	HttpStatus4xx metric.Int64Counter
@@ -91,6 +93,8 @@ func initUpDownCounters() {
 
 func initHistograms() {
 	HttpLatency, _ = Meter.Float64Histogram("http_request_latency_ms")
+	HttpRequestSize, _ = Meter.Int64Histogram("http_request_size_bytes")
+	HttpResponseSize, _ = Meter.Int64Histogram("http_response_size_bytes")
 }
 
 func initGauges() {
