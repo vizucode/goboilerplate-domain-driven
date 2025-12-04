@@ -46,7 +46,7 @@ func App() {
 		log.Fatal(err.Error())
 	}
 
-	appPort, err := strconv.Atoi(os.Getenv("APP_PORT"))
+	appPort, err := strconv.Atoi("8086")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

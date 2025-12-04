@@ -3,6 +3,7 @@ package observability
 import (
 	"context"
 	"log"
+	"os"
 	"strings"
 
 	"go.opentelemetry.io/otel"
@@ -61,6 +62,7 @@ func InitMetrics(ctx context.Context, cfg Config) func() {
 		sdkmetric.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(cfg.ServiceName),
+			semconv.DeploymentEnvironment(os.Getenv("APP_MODE")),
 		)),
 	)
 
