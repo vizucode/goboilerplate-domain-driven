@@ -169,8 +169,41 @@ setelah migrasi dibuat dan di config, maka ketika menjalankan startup migrasi ot
 
 ## 🧪 Testing
 
-- Struktur kode mendukung unit test dan mocking.
-- Tambahkan test di masing-masing folder sesuai kebutuhan.
+Struktur kode mendukung unit test dan mocking, sehingga kamu dapat menulis dan menjalankan test dengan mudah.
+
+### Menjalankan Unit Test
+
+Untuk menjalankan seluruh unit test di proyek, gunakan perintah berikut:
+
+```bash
+go test ./...
+```
+
+Perintah ini akan menjalankan semua test di seluruh folder.
+
+### Melihat Test Coverage
+
+Untuk mengetahui seberapa banyak kode yang sudah tercover oleh test, jalankan:
+
+```bash
+go test ./... -cover
+```
+
+Jika ingin melihat laporan coverage dalam bentuk file HTML yang lebih detail, gunakan:
+
+```bash
+go test ./... -coverprofile=coverage.out
+go tool cover -html=coverage.out
+```
+
+Laporan coverage akan terbuka di browser dan menampilkan bagian mana saja dari kode yang sudah teruji.
+
+### Best Practice
+
+- Simpan file test di folder yang sama dengan kode yang diuji, dengan akhiran `_test.go`.
+- Gunakan mocking untuk dependency eksternal agar test lebih reliable.
+- Pastikan setiap fitur utama memiliki unit test dan, jika perlu, integration test.
+
 
 ## 🔒 Praktik Keamanan
 
